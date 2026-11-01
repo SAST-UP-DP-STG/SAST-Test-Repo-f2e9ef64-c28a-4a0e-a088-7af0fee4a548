@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Play-Style Session Cookie Demo (CWE-312)</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2rem; }
+    .card { max-width: 720px; border: 1px solid #ddd; padding: 1.25rem; border-radius: 8px; }
+    label { display: block; margin-top: 0.75rem; }
+    input { width: 100%; padding: 0.5rem; margin-top: 0.25rem; box-sizing: border-box; }
+    button { margin-top: 1rem; padding: 0.6rem 1rem; }
+    pre { background: #f7f7f7; padding: 0.75rem; border-radius: 6px; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Authenticate</h2>
+    <label for="username">Username</label>
+    <input id="username" autocomplete="username" />
+    <label for="password">Password</label>
+    <input id="password" type="password" autocomplete="current-password" />
+    <button id="login">Login</button>
+    <pre id="out"></pre>
+
+    <h3>Cookies</h3>
+    <button id="show">Show document.cookie</button>
+    <pre id="cookies"></pre>
+  </div>
+  <script>
+    const qs = (s) => document.querySelector(s);
+    qs('#login').addEventListener('click', async () => {
+      const username = qs('#username').value || 'alice';
+      const password = qs('#password').value || 'password';
+      qs('#out').textContent = 'Loading...';
+      try {
+        const res = await fetch('/authenticate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+        qs('#out').textContent = JSON.stringify(data, null, 2);
+      } catch (e) {
+        qs('#out').textContent = 'Error: ' + e;
+      }
+    });
+    qs('#show').addEventListener('click', () => {
+      qs('#cookies').textContent = document.cookie || '(no cookies)';
+    });
+  </script>
+</body>
+</html>
+
